@@ -8,6 +8,7 @@ namespace ysk {
 const unsigned int DEFAULT_VALUE_OPTIMAL_SOLUTION_COUNT = 1;
 const double DEFAULT_VALUE_MULTIPLICATIVE_FACTOR_SNR = 1;
 const bool DEFAULT_VALUE_USE_HEURISTIC = false;
+const bool DEFAULT_VALUE_USE_COIN = false;
 
 /**
  * A struct containing all parameters defining a Yoshiko run
@@ -25,6 +26,7 @@ struct YParameterSet {
 	,rulesBitMask("111111")
 	,multiplicativeFactor(DEFAULT_VALUE_MULTIPLICATIVE_FACTOR_SNR)
 	,useHeuristic(DEFAULT_VALUE_USE_HEURISTIC),
+	useCoin(DEFAULT_VALUE_USE_COIN),
 	separatePartitionCuts(false),
 	separateTriangles(false),
 	targetClusterCount(-1)
@@ -40,6 +42,7 @@ struct YParameterSet {
 	std::string rulesBitMask;
 	double multiplicativeFactor;
 	bool useHeuristic;
+	bool useCoin;
 	bool separatePartitionCuts;
 	bool separateTriangles;
 	int targetClusterCount;

@@ -13,6 +13,8 @@
 #include "KClustifier.h"
 #include "ILPSolver.h"
 #include "YParameterSet.h"
+#include "../../../SYMPHONY/SYMPHONY-5.6/include/coin/CoinError.hpp"
+
 
 namespace ysk {
 

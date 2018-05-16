@@ -66,7 +66,7 @@ int main(int argc, char * const argv[]) {
 	string graphLabel = "cluster_solution";
 
         bool verifySolution = false;
-        
+
 	int inputFileFormat = 0;
 	int outputFileFormat = 0;
 
@@ -93,10 +93,12 @@ int main(int argc, char * const argv[]) {
 	ap.refOption("g", "graph label []", graphLabel, false);
 	ap.refOption("r", "explicitly turn on/off reduction rules, bit string (right to left): bit 0 = CliqueRule, bit 1 = CriticalCliqueRule, bit 2 = AlmostCliqueRule, bit 3 = HeavyEdgeRule3in1, bit 4 = ParameterDependentReductionRule, bit 5 = SimilarNeighborhoodRule [111111]", parameter.rulesBitMask, false);
 
+	ap.refOption("coin", "solve with coin-OR Symphony",parameter.useCoin,false);
+
 	ap.refOption("k", "Define the number of desired clusters, -1 determines this value automatically [-1]",parameter.targetClusterCount,false);
 
 	ap.refOption("s", "Prints the silhouette value at the end of the run [false]",printSilhouetteValue,false);
-        
+
 	ap.refOption("c", "Verify the solution (Check if the solution is indeed a clique graph and has the costs that are proposed [false]",verifySolution,false);
 
 
@@ -115,6 +117,7 @@ int main(int argc, char * const argv[]) {
 		std::cout << "      -O: " << outputFileFormat << std::endl;
 		std::cout << "      -v: " << verbosity << std::endl;
 		std::cout << "      -H: " << parameter.useHeuristic << std::endl;
+		std::cout << "			-coin"<< parameter.useCoin << std::endl;
 		std::cout << "      -T: " << time_limit << std::endl;
 		std::cout << "      -t  " << threshold << std::endl;
 		if (ap.given("t") && inputFileFormat != 2){
@@ -122,7 +125,7 @@ int main(int argc, char * const argv[]) {
 		}
 		std::cout << "-threads: " << no_threads << std::endl;
 		std::cout << "      -e: " << exportLP << std::endl;
-                
+
 		std::cout << "      -st: " << parameter.separateTriangles << std::endl;
 		std::cout << "      -sp: " << parameter.separatePartitionCuts << std::endl;
                 if ((ap.given("st") || ap.given("sp")) && parameter.useHeuristic){
@@ -181,14 +184,14 @@ int main(int argc, char * const argv[]) {
 	is.close(); //Close input stream
 
 	instance = input->getProblemInstance();
-        
+
 	CoreAlgorithm* core = new CoreAlgorithm(
 			instance,
 			parameter
 	);
 
 	ClusterEditingSolutions* ces = core->run();
-        
+
         if (ces == nullptr){
             cout << "No valid solution found!" << endl;
             return 0;
@@ -200,7 +203,7 @@ int main(int argc, char * const argv[]) {
 			cout << "Silhouette Value: " << SilhouetteValue(instance,ces->getSolution(i)).getValue() << endl;
 		}
 	}
-	
+
 	//Verify Solution if wanted
 	if (verifySolution){
                 SolutionChecker::verifySolutionCosts(*instance,*ces);

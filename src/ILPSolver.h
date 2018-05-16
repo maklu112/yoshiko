@@ -13,6 +13,10 @@
 #include <ilcplex/ilocplexi.h>
 #include <ilconcert/iloalg.h>
 
+// Symphony stuff
+#include "../../../SYMPHONY/SYMPHONY-5.6/include/coin/OsiSymSolverInterface.hpp"
+#include "../../../SYMPHONY/SYMPHONY-5.6/include/coin/CoinBuild.hpp"
+
 // lemon stuff
 #include <lemon/time_measure.h>
 #include <lemon/list_graph.h>
@@ -46,7 +50,11 @@ public:
 	{};
 
 
-	long solve(const ClusterEditingInstance& i,
+	long solveCPLEX(const ClusterEditingInstance& i,
+			ClusterEditingSolutions& s,
+			SolutionFlags& flags);
+
+	long solveCOIN(const ClusterEditingInstance& i,
 			ClusterEditingSolutions& s,
 			SolutionFlags& flags);
 

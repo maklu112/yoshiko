@@ -50,7 +50,7 @@ ILOLAZYCONSTRAINTCALLBACK4(triangle_callback, const ClusterEditingInstance&, ins
             if (x_vals[g.id(e)] > 1.0 - eps) x_vals[g.id(e)] = 1.0;
             //if (x_vals[g.id(e)] > eps && x_vals[g.id(e)] < 1.0 - eps) fractional = true;
         }
-        
+
 
         //Round k-cluster stuff as well ???
         for (int i = 0; i < clusterCount; i++){
@@ -58,7 +58,7 @@ ILOLAZYCONSTRAINTCALLBACK4(triangle_callback, const ClusterEditingInstance&, ins
         }
 
         unsigned long long no_checks = (n+clusterCount) * (n+clusterCount-1) * (n+clusterCount-2) / 6, no_checked = 0; //TODO: Why long long?
-        
+
         //	   cout << " versus " << no_checks << endl;
 
         for (FullGraph::NodeIt i(g); i != INVALID; ++i) {
@@ -94,30 +94,30 @@ ILOLAZYCONSTRAINTCALLBACK4(triangle_callback, const ClusterEditingInstance&, ins
                         ++no_added_triplet_cuts;
                     }
                 }
-                
+
                 //Additional conditions for virtual nodes / "cluster centers"
                 if (clusterCount != 0){ //This condition is probably redundant and only for easier readability
                     for (int k = 0; k <  clusterCount; ++k) {
                         //We increment the number of checked inequalities (to be precise we check 3 on each iteration)
                         ++no_checked;
-                        
+
                         if (y_vals[k*clusterCount + g.id(j)] + x_vals[g.id(g.edge(j, i))] - y_vals[k*clusterCount + g.id(i)] > 1 + 3 * eps) {
                             add( y[k*clusterCount + g.id(j)] + x[g.id(g.edge(j, i))] - y[k*clusterCount + g.id(i)] <= 1);
                             ++no_added_triplet_cuts;
                         }
-                        
+
                         if (y_vals[k*clusterCount + g.id(j)] - x_vals[g.id(g.edge(j, i))] + y_vals[k*clusterCount + g.id(i)] > 1 + 3 * eps) {
                             add( y[k*clusterCount + g.id(j)] - x[g.id(g.edge(j, i))] + y[k*clusterCount + g.id(i)] <= 1);
                             ++no_added_triplet_cuts;
                         }
-                        
+
                         if (y_vals[k*clusterCount + g.id(j)] + x_vals[g.id(g.edge(j, i))] + y_vals[k*clusterCount + g.id(i)] > 1 + 3 * eps) {
                             add(-y[k*clusterCount + g.id(j)] + x[g.id(g.edge(j, i))] + y[k*clusterCount + g.id(i)] <= 1);
                             ++no_added_triplet_cuts;
                         }
-                    }       
+                    }
                 }
-                
+
             }
         }
 
@@ -269,7 +269,7 @@ void ILPSolver::terminate(){
  * @param s The solution in which the results are stored (Should usually be a new/empty instance)
  * @param flags A flags object, which is modified to reflect events occuring during the solving process
  */
-long ILPSolver::solve(const ClusterEditingInstance& inst, ClusterEditingSolutions& s, SolutionFlags& flags) {
+long ILPSolver::solveCPLEX(const ClusterEditingInstance& inst, ClusterEditingSolutions& s, SolutionFlags& flags) {
 
     if(inst.isDirty()) {
 	//TODO: Better error handling, when would this happen?
@@ -277,7 +277,7 @@ long ILPSolver::solve(const ClusterEditingInstance& inst, ClusterEditingSolution
         exit(-1);
     }
 
-    //Fetch the full graph 
+    //Fetch the full graph
     const FullGraph g = inst.getOrig();
 
     //skip if size is 1 because cplex throws an error in this case.
@@ -329,7 +329,7 @@ long ILPSolver::solve(const ClusterEditingInstance& inst, ClusterEditingSolution
 
 
     //TODO: Potential for research, observe relations between cuts / running time / instance properties
-    
+
     //Set all generic cuts off
 //     cplex.setParam(IloCplex::Cliques, -1);
 //     cplex.setParam(IloCplex::Covers, -1);
@@ -344,7 +344,7 @@ long ILPSolver::solve(const ClusterEditingInstance& inst, ClusterEditingSolution
 
     int n = g.nodeNum();
 
-                
+
     //Some output because why not
     if (verbosity > 1) {
         cout << n << " nodes" << endl;
@@ -362,7 +362,7 @@ long ILPSolver::solve(const ClusterEditingInstance& inst, ClusterEditingSolution
         M.add(x[g.id(e)]);
         //cout << g.id(g.source(a)) << " --> " << g.id(g.target(a)) << "\t" << g.id(a) << " " << g.edge_no(g.id(g.source(a)), g.id(g.target(a))) << endl;
     }
-    
+
     IloBoolVarArray y(cplexEnv, _clusterCount * g.nodeNum());
     if (_useKCluster && _sep_triangles) M.add(y); //Explicit addition to model (as not used previously)
     if (_useKCluster) { // add k auxiliary vertices and edges to all the others
@@ -385,7 +385,7 @@ long ILPSolver::solve(const ClusterEditingInstance& inst, ClusterEditingSolution
                 obj_expr += inst.getWeight(e);
         }
     }
-    
+
     M.add(IloObjective(cplexEnv, obj_expr, IloObjective::Minimize));
 
     //Add inequalities for forbidden/permanent edges:
@@ -405,7 +405,7 @@ long ILPSolver::solve(const ClusterEditingInstance& inst, ClusterEditingSolution
             //}
         //}
     //}
-    
+
     //CALLBACKS
 
     if (_sep_triangles) cplex.use(triangle_callback(cplexEnv, inst, x,y,_useKCluster ? _clusterCount : 0)); // use triangle callback --> lazy constraints!
@@ -432,9 +432,9 @@ long ILPSolver::solve(const ClusterEditingInstance& inst, ClusterEditingSolution
                 }
             }
         }
-        
+
         //Additional Triangle Equalities for K-Cluster Problem
-     
+
         if (_useKCluster){
             for (int i = 0; i <  _clusterCount; ++i) {
                 for (FullGraph::NodeIt j(g); j != INVALID; ++j) {
@@ -447,8 +447,8 @@ long ILPSolver::solve(const ClusterEditingInstance& inst, ClusterEditingSolution
                 }
             }
         }
-    } 
-    
+    }
+
     //Additional Constraints for K-Cluster problem
     if(_useKCluster){
         //First, we want to assure, that every node is connected to EXACTLY one cluster center,
@@ -469,22 +469,22 @@ long ILPSolver::solve(const ClusterEditingInstance& inst, ClusterEditingSolution
             }
             M.add(cluster_association >= 1);
         }
-    
+
     }
-    
+
     if (verbosity > 1)
         cout << "done." << endl;
 
     //cout << "extracting (and exporting) ILP... " << flush; (TODO: Sinn? is anything happening here that I am missing?)
-    
+
     if (verbosity > 1) {
         cout << "extracting ILP... " << flush;
     }
 
     cplex.extract(M);
-    
+
     //if (verbose) cplex.exportModel("yoshiko.lp");
-    
+
     if (verbosity > 1) {
         cout << "done." << endl;
     }
@@ -589,4 +589,64 @@ long ILPSolver::solve(const ClusterEditingInstance& inst, ClusterEditingSolution
 
     return numsol;
 }
+
+long ILPSolver::solveCOIN(const ClusterEditingInstance& inst, ClusterEditingSolutions& s, SolutionFlags& flags) {
+
+	// TODO: Every Error handling and verbosity stuff
+
+	const FullGraph g = inst.getOrig();
+
+	int n = g.edgeNum();
+  int m,x=0,y=0,z=0,counter = 0;
+
+  OsiSymSolverInterface si;
+  CoinBuild bo = CoinBuild(0); // build object to build the problem model
+
+  // set bounds so edges are between 0 and 1, later we set them as integers and they become 0 or 1.
+  // Also initialize the Columns
+  for(m=0;m<n;m++){m
+    si.addCol(0,{},{},0,1,1);
+  }
+
+	std::list<int> weights;
+	double ele[][3] = {{1,1,-1},{1,-1,1},{-1,1,1}};
+
+	for (FullGraph::EdgeIt i(g),x=0; i != INVALID, x<n; ++i, n++) {
+			FullGraph::EdgeIt j(g); j = i;
+			weights.push_back(inst.getWeight(i));
+			for (++j,y=0; j != INVALID, y<n; ++j, y++) {
+					FullGraph::EdgeIt k(g); k = j;
+					for (++k, z=0; k != INVALID, z<n; ++k,z++) {
+						int col[] = {x,y,z};
+						bo.addRow(3,col,ele[0],-1,1);
+						bo.addRow(3,col,ele[1],-1,1);
+						bo.addRow(3,col,ele[2],-1,1);
+					}
+			}
+	}
+
+
+
+  printf("%d %d %d %u \n",si.getNumCols(),si.getNumRows(),bo.numberRows(),counter);
+
+  si.addRows(bo);
+
+  double sumWeight = 0;
+	std::list<int>::iterator ptr;
+  for(m=0,ptr = weights.begin();m<si.getNumCols(),ptr != weights.end();m++,ptr++){
+    si.setInteger(m);
+    si.setObjCoeff(m,-*ptr);
+    if(*ptr>0){
+      //printf("%f %f \n",&ptr, sumWeight);
+      sumWeight += *ptr;
+    }
+  }
+
+  si.addCol(0,{},{},1,1,sumWeight);
+  //printf("%f %f \n",si.getObjCoefficients()[6],sumWeight);
+  si.findIntegers(false);
+  si.initialSolve();
+
+}
+
 } // namespace ysk

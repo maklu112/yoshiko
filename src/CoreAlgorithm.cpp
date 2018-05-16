@@ -23,10 +23,10 @@ namespace ysk {
 
 		if (verbosity >= 5){ //Just some Debug-Output
 			cout << _instance << endl;
-                        
+
                         int edgeWeightSum = 0;
                         int positiveEdgeWeightSum = 0;
-                        
+
                         const WorkingCopyGraph g = _instance->getWorkingCopyInstance().getGraph();
                         for (WorkingCopyGraph::EdgeIt e(g); e != INVALID; ++e) {
                             double edgeWeight = _instance->getWorkingCopyInstance().getWeight(e);
@@ -39,7 +39,7 @@ namespace ysk {
                         cout << "Sum of all positive edges: " << positiveEdgeWeightSum << endl;
                         cout << "Difference: " << positiveEdgeWeightSum-edgeWeightSum << endl;
                 }
-                
+
 		// warn user about permanent and forbidden edges
 		const WorkingCopyGraph g = _instance->getWorkingCopyInstance().getGraph();
 		if (verbosity > 1) {
@@ -54,7 +54,7 @@ namespace ysk {
 					cout << _instance->getEdgeName(e) << "\tpermanent" << endl;
 			}
 		}
-		
+
 		//Some sanity checking
 		if (_parameter.targetClusterCount != -1){ //Check if casting is allowed
                     unsigned int clusterCount = unsigned(_parameter.targetClusterCount);
@@ -62,11 +62,11 @@ namespace ysk {
                         cout << "Critical: More clusters required than nodes are available, this will not work!" << endl;
                         isTerminated = true;
                     }
- 
+
                 }
 
 
-	
+
                 //Just a killswitch to prevent the program from running if the user has already cancelled it at this point
 		if (isTerminated){
                     return nullptr;
@@ -77,32 +77,32 @@ namespace ysk {
 
                 //Initialize a vector holding the instances that need to be solved (will only be one instance if no reduction is applied)
                 vector<ClusterEditingInstance*> clusterEditingInstances;
-                
+
                 //We "flag" the original instance so we don't get it mixed up with the others
                 _instance->isOriginalInstance = true;
 
-                
+
                 if ((!_parameter.useHeuristic && _parameter.targetClusterCount != -1)){
                     cout << "Warning: Reduction rules were ignored as they are not available in ILP k-cluster mode" << endl;
                     clusterEditingInstances.push_back(_instance);
                 }
-                
+
                 else if (_parameter.rulesBitMask == "000000"){
                     cout << "No Reduction Rules selected ... skipping reduction phase" << endl;
                     clusterEditingInstances.push_back(_instance);
                 }
-                
+
                 else {
-                    
+
                     //Apply reduction rules//
-                    
+
                     if (verbosity > 1) {
                             cout << endl << "applying FPT reduction rules..." << endl;
                             cout << "number of nodes:\t"
                                             << countNodes(_instance->getWorkingCopyInstance().getGraph())
                                             << endl;
                     }
-                    
+
                     bitset<NUMBER_OF_REDUCTION_RULES> rules(_parameter.rulesBitMask);
                     //Generate new CER instance
                     ClusterEditingReduction cer(
@@ -114,32 +114,32 @@ namespace ysk {
                     if (_informer != nullptr){
                             cer.registerInformer(_informer);
                     }
-                    
+
                     cer.perform(*_instance);
-                    
+
                     flags.totalCost += cer.getTotalCost();
-                
+
                     if (verbosity > 1){
-                    
+
                         cout << "=========================" << endl;
                         cout << "FPT reduction rules applied exhaustively." << endl;
                         cout << "time:\t" << clk << endl;
                         cout << "total cost of reduction:\t" << cer.getTotalCost() << endl;
                         cout << "number of instances:\t" << clusterEditingInstances.size() << endl;
                     }
-                    
-                    
+
+
                     vector<ClusterReductionInstance*>& reduced = cer.getInstances();
                     flags.reducedInstances = reduced.size();
 
-                                        
-                        //Move reduced instances 
+
+                        //Move reduced instances
 			for (vector<ClusterReductionInstance*>::iterator it = reduced.begin();
 					it != reduced.end(); it++) {
                             clusterEditingInstances.push_back((*it)->getInstance());
 			}
                 }
-                
+
 
 		//Sort CRI by size ascending to guarantee that the small instances are solved first
 		std::sort(clusterEditingInstances.begin(),clusterEditingInstances.end());
@@ -219,11 +219,22 @@ namespace ysk {
 					_solver->registerInformer(_informer);
 				}
 
-				try {
-					numberOfSolutions = _solver->solve(i, s, flags);
-				} catch (IloException &e) {
-					cout << "CPLEX error: " << e.getMessage() << endl;
+				// ---------------Änderung für Coin---------------
+				if(!_parameter.useCoin){
+					try {
+						numberOfSolutions = _solver->solveCPLEX(i, s, flags);
+					} catch (IloException &e) {
+						cout << "CPLEX error: " << e.getMessage() << endl;
+					}
 				}
+				else{
+					try {
+						numberOfSolutions = _solver->solveCOIN(i, s, flags);
+					} catch (CoinError e) {
+						cout << "COIN-Error: " << e.message() << endl;
+					}
+				}
+				// ----------------------------------------------
 				_solver->terminate();
 				delete _solver;
 
@@ -294,12 +305,12 @@ namespace ysk {
                 }
 	  }
 
-	  
-        //Set the flags of the return object 
+
+        //Set the flags of the return object
         _result->setFlags(flags);
 
         return _result;
-        
+
 	}
 
 	void CoreAlgorithm::cancel(){
