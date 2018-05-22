@@ -604,14 +604,14 @@ long ILPSolver::solveCOIN(const ClusterEditingInstance& inst, ClusterEditingSolu
 
   // set bounds so edges are between 0 and 1, later we set them as integers and they become 0 or 1.
   // Also initialize the Columns
-  for(m=0;m<n;m++){m
+  for(m=0;m<n;m++){
     si.addCol(0,{},{},0,1,1);
   }
 
 	std::list<int> weights;
 	double ele[][3] = {{1,1,-1},{1,-1,1},{-1,1,1}};
 
-	for (FullGraph::EdgeIt i(g),x=0; i != INVALID, x<n; ++i, n++) {
+	for (FullGraph::EdgeIt i(g); i != INVALID;++i) {
 			FullGraph::EdgeIt j(g); j = i;
 			weights.push_back(inst.getWeight(i));
 			for (++j,y=0; j != INVALID, y<n; ++j, y++) {
@@ -646,6 +646,13 @@ long ILPSolver::solveCOIN(const ClusterEditingInstance& inst, ClusterEditingSolu
   //printf("%f %f \n",si.getObjCoefficients()[6],sumWeight);
   si.findIntegers(false);
   si.initialSolve();
+
+	if(si.isProvenOptimal()){
+		return 1;
+	}
+	else{
+		return 0;
+	}
 
 }
 
