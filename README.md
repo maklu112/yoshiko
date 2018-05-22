@@ -28,6 +28,10 @@ First, LEMON 1.3 needs to be installed:
 
 You can remove the LEMON sources now, i.e., `rm -rf lemon-1.3`.
 
+Install Symphony:
+
+	https://projects.coin-or.org/SYMPHONY
+
 CPLEX is a commercial product owned by IBM. For academic purposes it can be obtained at no charge via IBM's Academic Initiative programme:
 
   http://www-03.ibm.com/ibm/university/academic/pub/page/membership
