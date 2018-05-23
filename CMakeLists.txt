@@ -182,8 +182,6 @@ set( YOSHIKO_VERSION \"${GitBranch}-${GitHashtag}\" )
 
 set( LIBLEMON_ROOT "$ENV{HOME}/lemon" CACHE PATH "Additional search directory for lemon library" )
 
-set( LIBSYMPHONY_ROOT "SYMPHONY/SYMPHONY-5.6" CACHE PATH "Search directory for smyphony")
-
 find_package(JNI)
 
 if (!JNI_FOUND)
@@ -249,14 +247,16 @@ configure_file( src/config.h.in ${PROJECT_SOURCE_DIR}/src/config.h )
 
 #set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -z noexecstack")
 
-include_directories( ${CPLEX_INC_DIR} ${CONCERT_INC_DIR} ${JNI_INCLUDE_DIRS} "${LIBLEMON_ROOT}/include" "${LIBSYMPHONY_ROOT}/include/coin" "src" "src/externlib" )
-link_directories( ${CPLEX_LIB_DIR} ${CONCERT_LIB_DIR}  "${LIBLEMON_ROOT}/lib" "${LIBSYMPHONY_ROOT}/lib")
+include_directories( ${CPLEX_INC_DIR} ${CONCERT_INC_DIR} ${JNI_INCLUDE_DIRS} "${LIBLEMON_ROOT}/include" "../../SYMPHONY/SYMPHONY-5.6/include/coin" "src" "src/externlib" )
+link_directories( ${CPLEX_LIB_DIR} ${CONCERT_LIB_DIR}  "${LIBLEMON_ROOT}/lib" "../../SYMPHONY/SYMPHONY-5.6/lib")
 
 set( CommonLibs
 	m
 	emon
 	ilocplex
 	cplex
+	OsiSym
+	CoinUtils
 	concert
 	pthread
 	dl
@@ -291,7 +291,7 @@ set_target_properties(executable PROPERTIES OUTPUT_NAME "yoshiko.${Yoshiko_Versi
 if (BUILD_STATIC)
 	target_link_libraries( executable ${CommonLibs} "-static")
 else()
-	target_link_libraries( executable ${CommonLibs})
+	target_link_libraries( executable ${CommonLibs} ${SYMPHONY_LIB})
 endif()
 
 
