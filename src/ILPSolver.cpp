@@ -592,50 +592,86 @@ long ILPSolver::solveCPLEX(const ClusterEditingInstance& inst, ClusterEditingSol
 
 long ILPSolver::solveCOIN(const ClusterEditingInstance& inst, ClusterEditingSolutions& s, SolutionFlags& flags) {
 
-	// TODO: Every Error handling and verbosity stuff
+//TODO: Error handling and verbosity stuff
 
 	const FullGraph g = inst.getOrig();
 
-	int n = g.edgeNum();
-  int m,x=0,y=0,z=0,counter = 0;
+// Ich kopiert hier einfach mal die Beiden Fehlerabfragen aus solveCPLEX
+	if(inst.isDirty()) {
+//TODO: Better error handling, when would this happen?
+			cerr << "Fatal error: ClusterEditingInstance is dirty."<<endl;
+			exit(-1);
+	}
+
+	if(g.nodeNum() <= 1) {
+			if (verbosity > 1) {
+					cout << "size of instance is 1. No further computation is necessary."<<endl;
+			}
+			s.resize(1);
+			s.setSolution(0, inst);
+			flags.solvedInstances +=1;
+			return 1;
+	}
+
+	int n = g.nodeNum();
+	int indizes[n][n];
+  int m,x,y,z=0; //Zählervariablen
 
   OsiSymSolverInterface si;
   CoinBuild bo = CoinBuild(0); // build object to build the problem model
 
+	cout << "Initialisiere " << n << " Spalten" << endl;
   // set bounds so edges are between 0 and 1, later we set them as integers and they become 0 or 1.
   // Also initialize the Columns
-  for(m=0;m<n;m++){
+  for(m=0;m<(n*n-1)/2;m++){
     si.addCol(0,{},{},0,1,1);
   }
+
+	for(x=0;x<n;x++){
+		for(y=x+1;y<n;y++){
+			indizes[x][y] = z;
+			z++;
+		}
+	}
 
 	std::list<int> weights;
 	double ele[][3] = {{1,1,-1},{1,-1,1},{-1,1,1}};
 
-	for (FullGraph::EdgeIt i(g); i != INVALID;++i) {
-			FullGraph::EdgeIt j(g); j = i;
-			weights.push_back(inst.getWeight(i));
-			for (++j,y=0; j != INVALID, y<n; ++j, y++) {
-					FullGraph::EdgeIt k(g); k = j;
-					for (++k, z=0; k != INVALID, z<n; ++k,z++) {
-						int col[] = {x,y,z};
-						bo.addRow(3,col,ele[0],-1,1);
-						bo.addRow(3,col,ele[1],-1,1);
-						bo.addRow(3,col,ele[2],-1,1);
+	cout << "Erstelle Zeilen" << endl;
+	x = 0;
+	for (FullGraph::NodeIt i(g);i != INVALID ;++i) {
+			FullGraph::NodeIt j(g); j = i;
+			for (++j,y=x+1; j != INVALID, y<n; ++j, y++) {
+					FullGraph::NodeIt k(g); k = j;
+					if(inst.isForbidden(g.edge(i,j))){
+						si.setColLower(indizes[x][y],0);
+						si.setColUpper(indizes[x][y],0);
+					}
+					if(inst.isPermanent(g.edge(i,j))){
+						si.setColLower(indizes[x][y],1);
+						si.setColUpper(indizes[x][y],1);
+					}
+					weights.push_back(inst.getWeight(g.edge(i,j)));
+					for (++k, z=y+1; k != INVALID, z<n; ++k,z++) {
+						int col[] = {indizes[x][y],indizes[y][z],indizes[x][z]};
+						if(!inst.isForbidden(g.edge(i,j))&&!inst.isPermanent(g.edge(i,j))&&!inst.isForbidden(g.edge(j,k))&&!inst.isPermanent(g.edge(j,k))&&!inst.isForbidden(g.edge(i,k))&&!inst.isPermanent(g.edge(i,k)))
+							bo.addRow(3,col,ele[0],-1,1);
+							bo.addRow(3,col,ele[1],-1,1);
+							bo.addRow(3,col,ele[2],-1,1);
 					}
 			}
+			x++;
 	}
 
-
-
-  printf("%d %d %d %u \n",si.getNumCols(),si.getNumRows(),bo.numberRows(),counter);
+  printf("Variablen: %d  Inequalities: %d \n",si.getNumCols(),bo.numberRows());
 
   si.addRows(bo);
 
   double sumWeight = 0;
 	std::list<int>::iterator ptr;
-  for(m=0,ptr = weights.begin();m<si.getNumCols(),ptr != weights.end();m++,ptr++){
+  for(m=0,ptr = weights.begin();m<(n*n-1)/2,ptr != weights.end();m++,ptr++){
     si.setInteger(m);
-    si.setObjCoeff(m,-*ptr);
+    si.setObjCoeff(m,-1*(*ptr));
     if(*ptr>0){
       //printf("%f %f \n",&ptr, sumWeight);
       sumWeight += *ptr;
@@ -643,9 +679,13 @@ long ILPSolver::solveCOIN(const ClusterEditingInstance& inst, ClusterEditingSolu
   }
 
   si.addCol(0,{},{},1,1,sumWeight);
-  //printf("%f %f \n",si.getObjCoefficients()[6],sumWeight);
+
   si.findIntegers(false);
+	//si.writeMps("tmpoutput");
   si.initialSolve();
+
+	const double *results = si.getColSolution();
+	cout << results[0] << endl;
 
 	if(si.isProvenOptimal()){
 		return 1;
