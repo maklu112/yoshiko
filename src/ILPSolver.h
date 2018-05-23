@@ -14,8 +14,9 @@
 #include <ilconcert/iloalg.h>
 
 // Symphony stuff
-#include "../../../SYMPHONY/SYMPHONY-5.6/include/coin/OsiSymSolverInterface.hpp"
-#include "../../../SYMPHONY/SYMPHONY-5.6/include/coin/CoinBuild.hpp"
+#include <OsiSymSolverInterface.hpp>
+#include <CoinBuild.hpp>
+#include <CoinError.hpp>
 
 // lemon stuff
 #include <lemon/time_measure.h>
