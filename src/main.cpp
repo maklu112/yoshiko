@@ -94,6 +94,8 @@ int main(int argc, char * const argv[]) {
 	ap.refOption("r", "explicitly turn on/off reduction rules, bit string (right to left): bit 0 = CliqueRule, bit 1 = CriticalCliqueRule, bit 2 = AlmostCliqueRule, bit 3 = HeavyEdgeRule3in1, bit 4 = ParameterDependentReductionRule, bit 5 = SimilarNeighborhoodRule [111111]", parameter.rulesBitMask, false);
 
 	ap.refOption("coin", "solve with coin-OR Symphony",parameter.useCoin,false);
+	ap.refOption("min", "minimum clustersize",parameter.minCluster,false);
+	ap.refOption("max", "maximum clustersize",parameter.maxCluster,false);
 
 	ap.refOption("k", "Define the number of desired clusters, -1 determines this value automatically [-1]",parameter.targetClusterCount,false);
 

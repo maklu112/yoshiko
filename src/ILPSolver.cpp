@@ -614,7 +614,7 @@ long ILPSolver::solveCOIN(const ClusterEditingInstance& inst, ClusterEditingSolu
 	}
 
 	int n = g.nodeNum();
-	int indizes[n][n];
+	int indizes[n][n],indizes[_clusterCount][n];
   int m,x,y,z=0; //Zählervariablen
 
   OsiSymSolverInterface si;
@@ -631,6 +631,18 @@ long ILPSolver::solveCOIN(const ClusterEditingInstance& inst, ClusterEditingSolu
 		for(y=x+1;y<n;y++){
 			indizes[x][y] = z;
 			z++;
+		}
+	}
+
+	if(_useKCluster){
+		for(m=0;m<_clusterCount;m++){
+			si.addCol(0,{},{},0,1,0);
+		}
+		for(m=0;m<_clusterCount;m++){
+			for(y=0;y<n;y++){
+				indizes[m][y] = z;
+				z++;
+			}
 		}
 	}
 
@@ -659,14 +671,65 @@ long ILPSolver::solveCOIN(const ClusterEditingInstance& inst, ClusterEditingSolu
 							bo.addRow(3,col,ele[1],-1,1);
 							bo.addRow(3,col,ele[2],-1,1);
 					}
+					// Inequalities for K-Clusterin
+					if(_useKCluster){
+						for(m=0;m<_clusterCount;m++){
+							int colY[] = {indizes[x][y],indizesY[m][x],indizesY[m][y]};
+							bo.addRow(3,colY,ele[0],-1,1);
+							bo.addRow(3,colY,ele[1],-1,1);
+							bo.addRow(3,colY,ele[2],-1,1);
+						}
+					}
+			}
+			// Jeder Knoten hat genau ein Clusterknoten
+			if(_useKCluster){
+				int noEmptyNode[_clusterCount];
+				double eleY[_useKCluster];
+				for(m=0;m<_clusterCount;m++){
+					noEmptyNode[m] = indizesY[m][x];
+					eleY[m] = 1;
+				}
+				bo.addRow(_clusterCount,noEmptyNode,eleY,1,1);
+			}
+
+			// Clustersize, each node needs a min or max number of edges;
+			if(parameter.minCluster > 1 || parameter.maxCluster < INT_MAX){
+				int neighbors[n-1];
+				double newEle[n-1];
+				for(m=0;m<x;m++){
+					neighbors[m] = indizes[m][x];
+					newEle[m] = 1;
+				}
+				for(m=x+1;m<n;m++){
+					neighbors[m-1] = indizes[x][m];
+					newEle[m-1] = 1;
+				}
+				bo.addRow(n-1,neighbors,newEle,parameter.minCluster,parameter.maxCluster);
 			}
 			x++;
 	}
 
+	// Every Cluster needs at least one Node
+	if(_useKCluster){
+		int noEmptyCluster[n];
+		double eleY[n];
+		for(m=0;m<_clusterCount;m++){
+			for(x=0;x<n;x++){
+				noEmptyCluster[x] = indizesY[m][x];
+				eleY[x] = 1;
+			}
+			bo.addRow(n,noEmptyCluster,eleY,1,n);
+		}
+	}
+
   printf("Variablen: %d  Inequalities: %d \n",si.getNumCols(),bo.numberRows());
 
-  si.addRows(bo);
-
+	try {
+		si.addRow(bo);
+		} catch (CoinError e) {
+		cout << "Fehler bei Modellerstellung" << endl;
+		cout << "COIN-Error: " << e.message() << endl;
+	}
   double sumWeight = 0;
 	std::list<int>::iterator ptr;
   for(m=0,ptr = weights.begin();m<(n*n-1)/2,ptr != weights.end();m++,ptr++){
@@ -678,12 +741,22 @@ long ILPSolver::solveCOIN(const ClusterEditingInstance& inst, ClusterEditingSolu
     }
   }
 
+	if(_useKCluster){
+		for(m=(n*(n-1))/2;m<((n*(n-1))/2)+_clusterCount;m++){
+			si.setInteger(m);
+		}
+	}
+
   si.addCol(0,{},{},1,1,sumWeight);
 
   si.findIntegers(false);
 	//si.writeMps("tmpoutput");
-  si.initialSolve();
-
+	try {
+		si.initialSolve();
+		} catch (CoinError e) {
+		cout << "Fehler beim Solving" << endl;
+		cout << "COIN-Error: " << e.message() << endl;
+	}
 	const double *results = si.getColSolution();
 	cout << results[0] << endl;
 

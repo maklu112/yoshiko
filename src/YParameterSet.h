@@ -1,6 +1,7 @@
 #ifndef SRC_YPARAMETERSET_H_
 #define SRC_YPARAMETERSET_H_
 
+#include <climits>
 
 namespace ysk {
 
@@ -29,7 +30,10 @@ struct YParameterSet {
 	useCoin(DEFAULT_VALUE_USE_COIN),
 	separatePartitionCuts(false),
 	separateTriangles(false),
-	targetClusterCount(-1)
+	targetClusterCount(-1),
+	minCluster(1);
+	maxCluster(INT_MAX);
+
 	{};
 
 	/**
