@@ -249,11 +249,9 @@ configure_file( src/config.h.in ${PROJECT_SOURCE_DIR}/src/config.h )
 
 
 find_path(SYMPHONY_DIR OsiSym)
-find_library(SYMPHONY_LIB NAMES OsiSym libOsiSym.so PATHS ${SYMPHONY_DIR} NO_DEFAULT_PATH)
-find_library(SYMPHONYCOIN_LIB NAMES CoinUtils libCoinUtils.so PATHS ${SYMPHONY_DIR} NO_DEFAULT_PATH) 
 
-include_directories( ${CPLEX_INC_DIR} ${CONCERT_INC_DIR} ${JNI_INCLUDE_DIRS} "${LIBLEMON_ROOT}/include" "src" "${SYMPHONY_DIR}/../include/coin" "src/externlib" )
-link_directories( ${CPLEX_LIB_DIR} ${CONCERT_LIB_DIR}  "${LIBLEMON_ROOT}/lib")
+include_directories( ${CPLEX_INC_DIR} ${CONCERT_INC_DIR} ${JNI_INCLUDE_DIRS} "${LIBLEMON_ROOT}/include" "../../SYMPHONY-5.6/include/coin" "src"  "src/externlib" )
+link_directories( ${CPLEX_LIB_DIR} ${CONCERT_LIB_DIR} "../../SYMPHONY-5.6/lib" )
 
 
 
@@ -262,8 +260,9 @@ set( CommonLibs
 	emon
 	ilocplex
 	cplex
-	${SYMPHONY_LIB}
-	${SYMPHONYCOIN_LIB}
+	Osi
+	OsiSym
+	CoinUtils
 	concert
 	pthread
 	dl
@@ -296,7 +295,7 @@ add_executable( executable ${YoshikoApp_Src} ${YoshikoApp_Hdr})
 set_target_properties(executable PROPERTIES OUTPUT_NAME "yoshiko.${Yoshiko_Version}")
 
 if (BUILD_STATIC)
-	target_link_libraries( executable ${CommonLibs} "-static")
+	target_link_libraries( executable ${CommonLibs} OsiSym "-static")
 else()
 	target_link_libraries( executable ${CommonLibs} )
 endif()

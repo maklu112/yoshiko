@@ -29,7 +29,7 @@ class ILPSolver {
 public:
 
 	// constructor
-	ILPSolver(bool st, bool sp, int num_opt_sol)
+	ILPSolver(bool st, bool sp, int num_opt_sol, int min, int max)
 	: _sep_triangles(st)
 	, _sep_partition_cuts(sp)
 	, _num_opt_sol(num_opt_sol)
@@ -37,10 +37,12 @@ public:
 	,_clusterCount(0)
 	,_cplexInitialized(false)
 	,_informer(nullptr)
+	,_minCluster(min)
+	,_maxCluster(max)
 	{};
 
 	// alternative constructor for k-cluster variant
-	ILPSolver(bool st, bool sp, int num_opt_sol, int clusterCount)
+	ILPSolver(bool st, bool sp, int num_opt_sol, int min, int max, int clusterCount)
 	: _sep_triangles(st)
 	, _sep_partition_cuts(sp)
 	, _num_opt_sol(num_opt_sol)
@@ -48,6 +50,8 @@ public:
 	,_clusterCount(clusterCount)
 	,_cplexInitialized(false)
 	,_informer(nullptr)
+	,_minCluster(min)
+	,_maxCluster(max)
 	{};
 
 
@@ -74,6 +78,10 @@ private:
     //K-Cluster variables
     bool _useKCluster;
     int _clusterCount;
+
+		// Min- / Max-Clustersize Werte
+		int _minCluster;
+		int _maxCluster;
 
     IloCplex::Aborter _aborter;
     bool _cplexInitialized;

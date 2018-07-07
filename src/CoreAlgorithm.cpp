@@ -203,6 +203,8 @@ namespace ysk {
 							_parameter.separateTriangles,
 							_parameter.separatePartitionCuts,
 							_parameter.nrOptimalSolutions,
+							_parameter.minCluster,
+							_parameter.maxCluster,
 							_parameter.targetClusterCount
 					);
 				}
@@ -211,7 +213,9 @@ namespace ysk {
 					_solver = new ILPSolver (
 							_parameter.separateTriangles,
 							_parameter.separatePartitionCuts,
-							_parameter.nrOptimalSolutions
+							_parameter.nrOptimalSolutions,
+							_parameter.minCluster,
+							_parameter.maxCluster
 					);
 				}
 

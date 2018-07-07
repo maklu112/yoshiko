@@ -31,8 +31,8 @@ struct YParameterSet {
 	separatePartitionCuts(false),
 	separateTriangles(false),
 	targetClusterCount(-1),
-	minCluster(1);
-	maxCluster(INT_MAX);
+	minCluster(1),
+	maxCluster(INT_MAX)
 
 	{};
 
@@ -50,6 +50,8 @@ struct YParameterSet {
 	bool separatePartitionCuts;
 	bool separateTriangles;
 	int targetClusterCount;
+	int minCluster;
+	int maxCluster;
 };
 
 } /* namespace ysk */
