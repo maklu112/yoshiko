@@ -87,6 +87,11 @@ namespace ysk {
                     clusterEditingInstances.push_back(_instance);
                 }
 
+								if ((!_parameter.useHeuristic && (_parameter.minCluster != 1 || _parameter.maxCluster != INT_MAX))){
+                    cout << "Warning: Reduction rules were ignored as they are not available in Min- / Max-Cluster mode" << endl;
+                    clusterEditingInstances.push_back(_instance);
+                }
+
                 else if (_parameter.rulesBitMask == "000000"){
                     cout << "No Reduction Rules selected ... skipping reduction phase" << endl;
                     clusterEditingInstances.push_back(_instance);

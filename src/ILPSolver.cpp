@@ -623,7 +623,7 @@ long ILPSolver::solveCOIN(const ClusterEditingInstance& inst, ClusterEditingSolu
 	cout << "Initialisiere " << n << " Spalten" << endl;
   // set bounds so edges are between 0 and 1, later we set them as integers and they become 0 or 1.
   // Also initialize the Columns
-  for(m=0;m<(n*n-1)/2;m++){
+  for(m=0;m<(n*(n-1))/2;m++){
     si.addCol(0,{},{},0,1,1);
   }
 
@@ -743,7 +743,7 @@ long ILPSolver::solveCOIN(const ClusterEditingInstance& inst, ClusterEditingSolu
   }
 
 	if(_useKCluster){
-		for(m=(n*(n-1))/2;m<((n*(n-1))/2)+_clusterCount;m++){
+		for(m=(n*(n-1))/2;m<((n*(n-1))/2)+_clusterCount*n;m++){
 			si.setInteger(m);
 		}
 	}
@@ -759,10 +759,9 @@ long ILPSolver::solveCOIN(const ClusterEditingInstance& inst, ClusterEditingSolu
 		cout << "COIN-Error: " << e.message() << endl;
 	}
 	const double *results = si.getColSolution();
-	cout << results[0] << endl;
+	flags.totalCost = si.getObjValue();
 
 	if(si.isProvenOptimal()){
-		flags.totalCost = results[sizeof(results)-1];
 		return 1;
 	}
 	else{
