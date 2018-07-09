@@ -100,14 +100,11 @@ namespace ysk {
 	  for (FullGraph::NodeIt i(g); i != INVALID; ++i){
 			FullGraph::NodeIt j(g); j = i;
 			for (++j,y=x+1; j != INVALID, y<n; ++j, y++){
-				cout << x*n+y << endl;
 				if (results[indizes[x*n+y]] > 1 - eps)
 		  		c.addEdge(A[i], A[j]);
 			}
 			x++;
 		}
-
-		cout << "echt jetzt?" << endl;
 
 	  ListGraph::NodeMap<int> comp_num(c);
 	  _solutions[0].resize(connectedComponents(c, comp_num));

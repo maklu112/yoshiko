@@ -247,10 +247,9 @@ namespace ysk {
 					}
 				}
 				// ----------------------------------------------
-				cout << "bis hier gut0" << endl;
 				_solver->terminate();
 				delete _solver;
-				cout << "bis hier gut1" << endl;
+
 			} else {
 				if (verbosity > 1){
 					cout << "Starting heuristic!" << endl;
@@ -265,7 +264,6 @@ namespace ysk {
 				flags.totalCost += h.getSolution(s);
 			}
 
-			cout << "bis hier gut2" << endl;
 
 			if (verbosity > 1)
 				cout << "time:\t" << clk << endl;
