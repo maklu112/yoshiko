@@ -83,18 +83,21 @@ namespace ysk {
 
 
                 if ((!_parameter.useHeuristic && _parameter.targetClusterCount != -1)){
+									if(verbosity > 1)
                     cout << "Warning: Reduction rules were ignored as they are not available in ILP k-cluster mode" << endl;
-                    clusterEditingInstances.push_back(_instance);
+                  clusterEditingInstances.push_back(_instance);
                 }
 
 								if ((!_parameter.useHeuristic && (_parameter.minCluster != 1 || _parameter.maxCluster != INT_MAX))){
+									if(verbosity > 1)
                     cout << "Warning: Reduction rules were ignored as they are not available in Min- / Max-Cluster mode" << endl;
-                    clusterEditingInstances.push_back(_instance);
+                  clusterEditingInstances.push_back(_instance);
                 }
 
                 else if (_parameter.rulesBitMask == "000000"){
+									if(verbosity > 1)
                     cout << "No Reduction Rules selected ... skipping reduction phase" << endl;
-                    clusterEditingInstances.push_back(_instance);
+                  clusterEditingInstances.push_back(_instance);
                 }
 
                 else {
@@ -244,9 +247,10 @@ namespace ysk {
 					}
 				}
 				// ----------------------------------------------
+				cout << "bis hier gut0" << endl;
 				_solver->terminate();
 				delete _solver;
-
+				cout << "bis hier gut1" << endl;
 			} else {
 				if (verbosity > 1){
 					cout << "Starting heuristic!" << endl;
@@ -260,6 +264,8 @@ namespace ysk {
 				h.start();
 				flags.totalCost += h.getSolution(s);
 			}
+
+			cout << "bis hier gut2" << endl;
 
 			if (verbosity > 1)
 				cout << "time:\t" << clk << endl;
@@ -293,7 +299,6 @@ namespace ysk {
 		size_t k = 0;
 		vector<vector<int> > p;
 		mergeSolutions(0, k, p, *_result, instances);
-
 
 	  //Heuristic K-Cluster post-processing if desired
 

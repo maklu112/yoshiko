@@ -41,6 +41,11 @@ public:
   void setSolution(int k,
                    const WorkingCopyInstance& inst);
 
+  void setSolution(int* indizes,
+                   int n,
+                   const double results[],
+                   const ClusterEditingInstance& inst);
+
   size_t getNumberOfSolutions() const;
 
   ysk::SolutionFlags getFlags();

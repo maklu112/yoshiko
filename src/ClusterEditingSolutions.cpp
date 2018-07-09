@@ -80,6 +80,45 @@ namespace ysk {
 		cout << "done." << endl;
 	}
 
+	// Same as above for Symphony
+	void ClusterEditingSolutions::setSolution(int* indizes,int n,const double results[], const ClusterEditingInstance &i) {
+	  // compute clusters
+	  if (verbosity > 1)
+		cout << "computing clusters for solution " << 1 << "... " << flush;
+
+	  const FullGraph g = i.getOrig();
+		int x,y;
+
+	  ListGraph c; // graph that will contain clusters as (fully) connected components
+
+	  FullGraph::NodeMap<ListGraph::Node> A(g);
+
+	  for (FullGraph::NodeIt v(g); v != INVALID; ++v)
+		A[v] = c.addNode();
+
+		x = 0;
+	  for (FullGraph::NodeIt i(g); i != INVALID; ++i){
+			FullGraph::NodeIt j(g); j = i;
+			for (++j,y=x+1; j != INVALID, y<n; ++j, y++){
+				cout << x*n+y << endl;
+				if (results[indizes[x*n+y]] > 1 - eps)
+		  		c.addEdge(A[i], A[j]);
+			}
+			x++;
+		}
+
+		cout << "echt jetzt?" << endl;
+
+	  ListGraph::NodeMap<int> comp_num(c);
+	  _solutions[0].resize(connectedComponents(c, comp_num));
+
+	  for (FullGraph::NodeIt v(g); v != INVALID; ++v)
+		_solutions[0][comp_num[A[v]]].push_back(g.id(v));
+
+	  if (verbosity > 1)
+		cout << "done." << endl;
+	}
+
 	SolutionFlags ClusterEditingSolutions::getFlags(){
 		return _flags;
 	}

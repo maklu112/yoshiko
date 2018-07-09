@@ -256,7 +256,7 @@ void ILPSolver::registerInformer(yskLib::CplexInformer* informer){
  */
 void ILPSolver::terminate(){
 	if (verbosity > 2){
-		cout << "Terminating CPLEX Environment" << endl;
+		cout << "Terminating Environment" << endl;
 	}
 	if (_cplexInitialized){
 		_aborter.abort();
@@ -620,7 +620,14 @@ long ILPSolver::solveCOIN(const ClusterEditingInstance& inst, ClusterEditingSolu
   OsiSymSolverInterface si;
   CoinBuild bo = CoinBuild(0); // build object to build the problem model
 
-	cout << "Initialisiere " << n << " Spalten" << endl;
+	// Parameter
+
+	si.setSymParam(OsiSymVerbosity, verbosity-3);
+	if(time_limit != -1)
+		si.setSymParam(OsiSymTimeLimit,time_limit);
+
+	if(verbosity > 1)
+		cout << "Initialisiere " << n << " Spalten" << endl;
   // set bounds so edges are between 0 and 1, later we set them as integers and they become 0 or 1.
   // Also initialize the Columns
   for(m=0;m<(n*(n-1))/2;m++){
@@ -649,7 +656,8 @@ long ILPSolver::solveCOIN(const ClusterEditingInstance& inst, ClusterEditingSolu
 	std::list<int> weights;
 	double ele[][3] = {{1,1,-1},{1,-1,1},{-1,1,1}};
 
-	cout << "Erstelle Zeilen" << endl;
+	if(verbosity > 1)
+	 cout << "Erstelle Zeilen" << endl;
 	x = 0;
 	for (FullGraph::NodeIt i(g);i != INVALID ;++i) {
 			FullGraph::NodeIt j(g); j = i;
@@ -722,9 +730,12 @@ long ILPSolver::solveCOIN(const ClusterEditingInstance& inst, ClusterEditingSolu
 		}
 	}
 
-  printf("Variablen: %d  Inequalities: %d \n",si.getNumCols(),bo.numberRows());
+	if(verbosity > 1)
+  	printf("Variablen: %d  Inequalities: %d \n",si.getNumCols(),bo.numberRows());
 
 	try {
+		if(verbosity > 1)
+			cout << "Creating Environment..." << endl;
 		si.addRows(bo);
 		} catch (CoinError e) {
 		cout << "Fehler bei Modellerstellung" << endl;
@@ -734,7 +745,6 @@ long ILPSolver::solveCOIN(const ClusterEditingInstance& inst, ClusterEditingSolu
 	std::list<int>::iterator ptr;
   for(m=0,ptr = weights.begin();m<(n*n-1)/2,ptr != weights.end();m++,ptr++){
     si.setInteger(m);
-		cout << "set " << m << " as integer" << endl;
     si.setObjCoeff(m,-1*(*ptr));
     if(*ptr>0){
       //printf("%f %f \n",&ptr, sumWeight);
@@ -758,13 +768,30 @@ long ILPSolver::solveCOIN(const ClusterEditingInstance& inst, ClusterEditingSolu
 		cout << "Fehler beim Solving" << endl;
 		cout << "COIN-Error: " << e.message() << endl;
 	}
-	const double *results = si.getColSolution();
+
+	flags.ilpGenerated = true;
+	if(si.isTimeLimitReached())
+		flags.timedOut = true;
+
+	if(!si.isProvenOptimal())
+		flags.optimal = false;
+	else
+		flags.solvedInstances += 1;
+
 	flags.totalCost = si.getObjValue();
 
+	s.resize(1);
+	const double *results = si.getColSolution();
+	s.setSolution(*indizes,n,results, inst);
+
 	if(si.isProvenOptimal()){
+		if(verbosity > 1)
+			cout << "Symphony end 1" << endl;
 		return 1;
 	}
 	else{
+		if(verbosity > 1)
+			cout << "Symphony end 0" << endl;
 		return 0;
 	}
 
