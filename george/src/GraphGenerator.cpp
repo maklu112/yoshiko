@@ -3,9 +3,10 @@
 using namespace std;
 using namespace lemon;
 
-void GraphGenerator::newGraph(){
-  // Graph, random seed und zählervariablen
-  srand(time(NULL));
+void GraphGenerator::newGraph(string &filename,int r){
+  // Graph, random seed und Zählervariablen
+
+  srand(time(NULL)+r*_size);
   int x,y;
 
   // Fülle leeren Graph mit schwachen kanten oder starken nicht-Kanten 1/3
@@ -18,7 +19,7 @@ void GraphGenerator::newGraph(){
   }
 
   // Erstes Cluster zwischen n/k und n.
-  int startpoint = rand() % (_size - (_size / _var)) + (_size / _var);
+  int startpoint = (rand() % (_size - (_size / _var))) + (_size / _var);
 
   // Cluster sollen entweder starke Kanten oder schwache nicht-Kanten haben 1/3
   for(x=startpoint;x<_size;x++){
@@ -64,8 +65,10 @@ void GraphGenerator::newGraph(){
   //cout << "wtf" << endl;
 
   ofstream output;
+  filename += ".jena";
+  const char *chr = filename.c_str();
 
-  output.open("graph.jena");
+  output.open(chr);
   output << _size << "\n";
   for(x=0;x<_size;x++){
     output << x << "\n";

@@ -4,6 +4,7 @@
 #include <fstream>
 #include <stdlib.h>
 #include <time.h>
+#include <string>
 
 class GraphGenerator{
   public:
@@ -13,7 +14,7 @@ class GraphGenerator{
        _var(k)
     {};
 
-    void newGraph();
+    void newGraph(std::string &filename,int r);
 
   private:
     int _size;
