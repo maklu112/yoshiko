@@ -1,0 +1,24 @@
+j=20
+c=0
+mkdir results
+touch results/output.txt
+while [ $j -le 30 ]
+do
+	i=0
+	while [ $i -le 20 ]
+	do
+		./george -n $j -r $i
+		./yoshiko.2.2.0 -f graph.jena -r 000000 -v 1 > results/cplexResults.txt
+		./yoshiko.2.2.0 -f graph.jena -r 000000 -v 1 -coin > results/coinResults.txt
+		s1=$(diff results/cplexResults.txt results/coinResults.txt)
+		if [ "$s1" != "" ]
+			then
+				echo $j >> results/output.txt
+		fi	
+		i=$((i+1))
+	done
+	j=$((j+1))
+done
+cat results/output.txt
+rm results/output.txt
+rm -rf results

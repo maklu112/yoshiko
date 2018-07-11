@@ -8,10 +8,11 @@ set(George_src
 	src/GraphGenerator.h
 )
 
-add_executable(george ${George_src})
+add_executable(executable ${George_src})
+set_target_properties(executable PROPERTIES OUTPUT_NAME "george")
 
 
 set( LIBLEMON_ROOT "$ENV{HOME}/lemon" CACHE PATH "Additional search directory for lemon library" )
 include_directories( "${LIBLEMON_ROOT}/include")
 
-target_link_libraries(george m emon)
+target_link_libraries(executable m emon)
