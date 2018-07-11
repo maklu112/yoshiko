@@ -247,8 +247,9 @@ configure_file( src/config.h.in ${PROJECT_SOURCE_DIR}/src/config.h )
 
 #set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -z noexecstack")
 
+### Hier müssen immernoch die beiden Pfade für die SMYPHONY lib angegeben werden :/
 
-include_directories( ${CPLEX_INC_DIR} ${CONCERT_INC_DIR} ${JNI_INCLUDE_DIRS} "${LIBLEMON_ROOT}/include" "../../SYMPHONY-5.6/include/coin" "src"  "src/externlib" )
+include_directories( ${CPLEX_INC_DIR} ${CONCERT_INC_DIR} ${JNI_INCLUDE_DIRS} "${LIBLEMON_ROOT}/include" "../../SYMPHONY-5.6/include/coin" "src"  "src/externlib" ) 
 link_directories( ${CPLEX_LIB_DIR} ${CONCERT_LIB_DIR} "../../SYMPHONY-5.6/lib" )
 
 
