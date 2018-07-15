@@ -3,10 +3,10 @@
 using namespace std;
 using namespace lemon;
 
-void GraphGenerator::newGraph(string &filename,int r){
+void GraphGenerator::newGraph(string &filename,int s){
   // Graph, random seed und Zählervariablen
 
-  srand(time(NULL)+r*_size);
+  srand(time(NULL)+s*_size);
   int x,y;
 
   // Fülle leeren Graph mit schwachen kanten oder starken nicht-Kanten 1/3
@@ -63,6 +63,37 @@ void GraphGenerator::newGraph(string &filename,int r){
     }
   } */
   //cout << "wtf" << endl;
+
+  ofstream output;
+  filename += ".jena";
+  const char *chr = filename.c_str();
+
+  output.open(chr);
+  output << _size << "\n";
+  for(x=0;x<_size;x++){
+    output << x << "\n";
+  }
+  for(x=0;x<_size;x++){
+    for(y=x+1;y<_size;y++){
+      output << weights[x][y] << " ";
+    }
+    output << "\n";
+  }
+
+  output.close();
+}
+
+void GraphGenerator::newRandomGraph(string &filename,int s){
+
+  srand(time(NULL)+s*_size);
+  int weights[_size][_size];
+  int x,y;
+
+  for(x=0;x<_size;x++){
+    for(y=x+1;y<_size;y++){
+      weights[x][y]= rand() % 2000 - 1000;
+    }
+  }
 
   ofstream output;
   filename += ".jena";

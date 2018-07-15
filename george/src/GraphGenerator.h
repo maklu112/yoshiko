@@ -14,7 +14,8 @@ class GraphGenerator{
        _var(k)
     {};
 
-    void newGraph(std::string &filename,int r);
+    void newGraph(std::string &filename,int s);
+    void newRandomGraph(std::string &filename, int s);
 
   private:
     int _size;
