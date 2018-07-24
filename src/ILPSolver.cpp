@@ -348,9 +348,10 @@ long ILPSolver::solveCPLEX(const ClusterEditingInstance& inst, ClusterEditingSol
     //Some output because why not
     if (verbosity > 1) {
         cout << n << " nodes" << endl;
-    }
+
 
         if (_useKCluster) cout << "k fixed" << endl;
+		}
 
     //Generate variables:
 
@@ -626,8 +627,6 @@ long ILPSolver::solveCOIN(const ClusterEditingInstance& inst, ClusterEditingSolu
 	if(time_limit != -1)
 		si.setSymParam(OsiSymTimeLimit,time_limit);
 
-	if(verbosity > 1)
-		cout << "Initialisiere " << n << " Spalten" << endl;
   // set bounds so edges are between 0 and 1, later we set them as integers and they become 0 or 1.
   // Also initialize the Columns
   for(m=0;m<(n*(n-1))/2;m++){
@@ -642,7 +641,7 @@ long ILPSolver::solveCOIN(const ClusterEditingInstance& inst, ClusterEditingSolu
 	}
 
 	if(_useKCluster){
-		for(m=0;m<_clusterCount;m++){
+		for(m=0;m<_clusterCount*n;m++){
 			si.addCol(0,{},{},0,1,0);
 		}
 		for(m=0;m<_clusterCount;m++){
