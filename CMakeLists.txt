@@ -255,10 +255,12 @@ configure_file( src/config.h.in ${PROJECT_SOURCE_DIR}/src/config.h )
 
 #set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -z noexecstack")
 
-### Hier müssen immernoch die beiden Pfade für die SMYPHONY lib angegeben werden :/
+### Hier muss immernoch der Pfad für die SMYPHONY lib angegeben werden :/
 
-include_directories( ${CPLEX_INC_DIR} ${CONCERT_INC_DIR} ${JNI_INCLUDE_DIRS} "${LIBLEMON_ROOT}/include" "../../SYMPHONY-5.6/include/coin" "src"  "src/externlib" ) 
-link_directories( ${CPLEX_LIB_DIR} ${CONCERT_LIB_DIR} "../../SYMPHONY-5.6/lib" )
+set( SYMPHONY_LIB "../../SYMPHONY-5.6" CACHE PATH "Symphony lib path" )
+
+include_directories( ${CPLEX_INC_DIR} ${CONCERT_INC_DIR} ${JNI_INCLUDE_DIRS} "${LIBLEMON_ROOT}/include" "${SYMPHONY_LIB}/include/coin" "src"  "src/externlib" ) 
+link_directories( ${CPLEX_LIB_DIR} ${CONCERT_LIB_DIR} "${SYMPHONY_LIB}/lib" )
 
 
 
@@ -302,7 +304,7 @@ add_executable( executable ${YoshikoApp_Src} ${YoshikoApp_Hdr})
 set_target_properties(executable PROPERTIES OUTPUT_NAME "yoshiko.${Yoshiko_Version}")
 
 if (BUILD_STATIC)
-	target_link_libraries( executable ${CommonLibs} OsiSym "-static")
+	target_link_libraries( executable ${CommonLibs} "-static")
 else()
 	target_link_libraries( executable ${CommonLibs} )
 endif()
