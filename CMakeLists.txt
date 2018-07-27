@@ -190,14 +190,7 @@ set( YOSHIKO_VERSION \"${GitBranch}-${GitHashtag}\" )
 
 set( LIBLEMON_ROOT "$ENV{HOME}/lemon" CACHE PATH "Additional search directory for lemon library" )
 
-find_package(JNI)
 
-if (!JNI_FOUND)
-    message("Could not find JNI, you will not be able to build the library!")
-else()
-    message("JNI found @: ${JNI_INCLUDE_DIRS}")
-endif()
-    
 if( NOT CPLEX_INC_DIR OR NOT CPLEX_LIB_DIR OR NOT CONCERT_INC_DIR OR NOT CONCERT_LIB_DIR )
 	set( CPLEX_AUTODETECTION_PREFIXES "$ENV{HOME}/ibm/ILOG;/Applications;$ENV{HOME}/Applications/IBM/ILOG; $ENV{HOME}/ILOG;/opt/ibm/ILOG;$ENV{HOME}/Applications/IBM/ILOG" CACHE STRING "CPLEX automatic lookup directories" )
 	foreach( CplexInstallPrefix ${CPLEX_AUTODETECTION_PREFIXES} )
@@ -257,9 +250,9 @@ configure_file( src/config.h.in ${PROJECT_SOURCE_DIR}/src/config.h )
 
 ### Hier muss immernoch der Pfad für die SMYPHONY lib angegeben werden :/
 
-set( SYMPHONY_LIB "../../SYMPHONY-5.6" CACHE PATH "Symphony lib path" )
+set( SYMPHONY_LIB "../../SYMPHONY-5.6.2" CACHE PATH "Symphony lib path" )
 
-include_directories( ${CPLEX_INC_DIR} ${CONCERT_INC_DIR} ${JNI_INCLUDE_DIRS} "${LIBLEMON_ROOT}/include" "${SYMPHONY_LIB}/include/coin" "src"  "src/externlib" ) 
+include_directories( ${CPLEX_INC_DIR} ${CONCERT_INC_DIR} "${LIBLEMON_ROOT}/include" "${SYMPHONY_LIB}/include/coin" "src"  "src/externlib" ) 
 link_directories( ${CPLEX_LIB_DIR} ${CONCERT_LIB_DIR} "${SYMPHONY_LIB}/lib" )
 
 
@@ -288,17 +281,6 @@ add_test(unitTests unitTests)
 
 #############################
 
-if (JNI_FOUND)
-    if (BUILD_STATIC)
-            add_library(library STATIC ${YoshikoLib_Src} ${YoshikoLib_Hdr} )
-            set_target_properties(library PROPERTIES OUTPUT_NAME "yoshiko.${Yoshiko_Version}")
-            target_link_libraries( library ${CommonLibs} "-static")
-    else()
-            add_library(library SHARED ${YoshikoLib_Src} ${YoshikoLib_Hdr} )
-            set_target_properties(library PROPERTIES OUTPUT_NAME "yoshiko.${Yoshiko_Version}")
-            target_link_libraries( library ${CommonLibs})
-    endif()
-endif()
 
 add_executable( executable ${YoshikoApp_Src} ${YoshikoApp_Hdr})
 set_target_properties(executable PROPERTIES OUTPUT_NAME "yoshiko.${Yoshiko_Version}")
