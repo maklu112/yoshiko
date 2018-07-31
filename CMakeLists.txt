@@ -50,12 +50,11 @@ set( Yoshiko_Hdr
   src/CplexInformer.h
   src/Delta.h
   src/DynProgTable.h
-  src/EdgeHeap.h
+
   src/Globals.h
   src/Helpers.h
   src/ILPSolver.h
   src/InducedCostsHeuristic.h
-  src/InducedCostHeuristicLight.h
   src/KClustifier.h
   src/LightCompleteGraph.h
   src/ParameterizedInstance.h
@@ -86,12 +85,11 @@ set( Yoshiko_Src
   src/CoreAlgorithm.cpp
   src/Delta.cpp
   src/DynProgTable.cpp
-  src/EdgeHeap.cpp
+
   src/Globals.cpp
   src/Helpers.cpp
   src/ILPSolver.cpp
   src/InducedCostsHeuristic.cpp
-  src/InducedCostHeuristicLight.cpp
   src/KClustifier.cpp
   src/LightCompleteGraph.cpp
   src/ParameterizedInstance.cpp
@@ -241,7 +239,7 @@ endif(NOT CMAKE_BUILD_TYPE)
 set(CMAKE_CXX_FLAGS_DEBUG "-Wall -Wextra -Wno-long-long -Wno-unused-parameter  -Wno-unknown-pragmas -g -ggdb -O0 -DDEBUG -DVERBOSE")
 set(CMAKE_CXX_FLAGS_RELEASE "-Wall -Wextra -Wno-long-long -Wno-unused-parameter  -Wno-unknown-pragmas -O3 -DNDEBUG")
 set(CMAKE_CXX_FLAGS_PROFILE "-Wall -Wextra -Wno-long-long -Wno-unused-parameter  -Wno-unknown-pragmas -O3 -g -ggdb -DNDEBUG")
-set( CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -Wno-write-strings -Wno-ignored-attributes -fno-strict-aliasing -std=c++0x" )
+set( CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -Wno-write-strings -Wno-ignored-attributes -fno-strict-aliasing -std=c++11" )
 add_definitions( -DIL_STD ) #???
 configure_file( src/config.h.in ${PROJECT_SOURCE_DIR}/src/config.h )
 
@@ -250,7 +248,7 @@ configure_file( src/config.h.in ${PROJECT_SOURCE_DIR}/src/config.h )
 
 ### Hier muss immernoch der Pfad für die SMYPHONY lib angegeben werden :/
 
-set( SYMPHONY_LIB "../../SYMPHONY-5.6.2" CACHE PATH "Symphony lib path" )
+set( SYMPHONY_LIB "../SYMPHONY-5.6.2" CACHE PATH "Symphony lib path" )
 
 include_directories( ${CPLEX_INC_DIR} ${CONCERT_INC_DIR} "${LIBLEMON_ROOT}/include" "${SYMPHONY_LIB}/include/coin" "src"  "src/externlib" ) 
 link_directories( ${CPLEX_LIB_DIR} ${CONCERT_LIB_DIR} "${SYMPHONY_LIB}/lib" )
@@ -263,6 +261,7 @@ set( CommonLibs
 	ilocplex
 	cplex
 	Osi
+	Sym
 	OsiSym
 	CoinUtils
 	concert
