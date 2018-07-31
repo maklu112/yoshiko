@@ -50,7 +50,8 @@ set( Yoshiko_Hdr
   src/CplexInformer.h
   src/Delta.h
   src/DynProgTable.h
-
+  src/EdgeHeap.h
+  src/InducedCostHeuristicLight.h
   src/Globals.h
   src/Helpers.h
   src/ILPSolver.h
@@ -89,7 +90,8 @@ set( Yoshiko_Src
   src/Globals.cpp
   src/Helpers.cpp
   src/ILPSolver.cpp
-  src/InducedCostsHeuristic.cpp
+  src/InducedCostHeuristicLight.cpp
+  src/InducedCostHeuristic.cpp
   src/KClustifier.cpp
   src/LightCompleteGraph.cpp
   src/ParameterizedInstance.cpp
@@ -248,10 +250,10 @@ configure_file( src/config.h.in ${PROJECT_SOURCE_DIR}/src/config.h )
 
 ### Hier muss immernoch der Pfad für die SMYPHONY lib angegeben werden :/
 
-set( SYMPHONY_LIB "../SYMPHONY-5.6.2" CACHE PATH "Symphony lib path" )
+set( SYMPHONY_LIB "../SYMPHONY-5.6" CACHE PATH "Symphony lib path" )
 
 include_directories( ${CPLEX_INC_DIR} ${CONCERT_INC_DIR} "${LIBLEMON_ROOT}/include" "${SYMPHONY_LIB}/include/coin" "src"  "src/externlib" ) 
-link_directories( ${CPLEX_LIB_DIR} ${CONCERT_LIB_DIR} "${SYMPHONY_LIB}/lib" )
+link_directories( ${CPLEX_LIB_DIR} ${CONCERT_LIB_DIR} "${LIBLEMON_ROOT}/lib" "${SYMPHONY_LIB}/lib" )
 
 
 
