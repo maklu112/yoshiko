@@ -50,8 +50,8 @@ set( Yoshiko_Hdr
   src/CplexInformer.h
   src/Delta.h
   src/DynProgTable.h
-  src/EdgeHeap.h
-  src/InducedCostHeuristicLight.h
+
+
   src/Globals.h
   src/Helpers.h
   src/ILPSolver.h
@@ -86,11 +86,11 @@ set( Yoshiko_Src
   src/CoreAlgorithm.cpp
   src/Delta.cpp
   src/DynProgTable.cpp
-  src/EdgeHeap.cpp
+
   src/Globals.cpp
   src/Helpers.cpp
   src/ILPSolver.cpp
-  src/InducedCostHeuristicLight.cpp
+
   src/InducedCostsHeuristic.cpp
   src/KClustifier.cpp
   src/LightCompleteGraph.cpp
