@@ -1,5 +1,6 @@
 #ifndef ILPSOLVER_H
 #define ILPSOLVER_H
+#include <fstream>
 
 // yoshiko stuff
 #include "ClusterEditingInstance.h"

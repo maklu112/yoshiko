@@ -504,7 +504,11 @@ long ILPSolver::solveCPLEX(const ClusterEditingInstance& inst, ClusterEditingSol
     bool feasible = cplex.solve();
 
     //Time-out handling
+    ofstream output;
+    output.open("cplexTime.txt");
+
     if (cplex.getCplexStatus() == IloCplex::AbortTimeLim){
+	output << "1" << endl;
     	bool resume = false;
     	//If we use the informer we have the possibility of asking the listener to resume the solver
     	if (_informer != nullptr){
@@ -522,6 +526,8 @@ long ILPSolver::solveCPLEX(const ClusterEditingInstance& inst, ClusterEditingSol
     	}
 
     }
+    else {output << "0" << endl;}
+    output.close();
 
     //For some reason the solver terminated without providing an optimal solution
     if (!feasible) {
@@ -624,9 +630,9 @@ long ILPSolver::solveCOIN(const ClusterEditingInstance& inst, ClusterEditingSolu
 	// Parameter
 
 	si.setSymParam(OsiSymVerbosity, verbosity-3);
-	if(time_limit != -1)
+	if(time_limit != -1){
 		si.setSymParam(OsiSymTimeLimit,time_limit);
-
+	}
   // set bounds so edges are between 0 and 1, later we set them as integers and they become 0 or 1.
   // Also initialize the Columns
   for(m=0;m<(n*(n-1))/2;m++){
@@ -768,9 +774,17 @@ long ILPSolver::solveCOIN(const ClusterEditingInstance& inst, ClusterEditingSolu
 		cout << "COIN-Error: " << e.message() << endl;
 	}
 
+	ofstream output;
+  	output.open("coinTime.txt");
+
 	flags.ilpGenerated = true;
-	if(si.isTimeLimitReached())
+	if(si.isTimeLimitReached()){
 		flags.timedOut = true;
+  		output << "1" << endl;
+		return 0;
+	}
+	else output << "0" << endl;
+	output.close();
 
 	if(!si.isProvenOptimal())
 		flags.optimal = false;

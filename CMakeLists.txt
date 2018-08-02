@@ -86,7 +86,7 @@ set( Yoshiko_Src
   src/CoreAlgorithm.cpp
   src/Delta.cpp
   src/DynProgTable.cpp
-
+  src/EdgeHeap.cpp
   src/Globals.cpp
   src/Helpers.cpp
   src/ILPSolver.cpp

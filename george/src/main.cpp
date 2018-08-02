@@ -18,7 +18,7 @@ int main(int argc, char * const argv[]){
 
   int n;
   int s = 0;
-  int k = 3;
+  int k = 2;
   bool random = false;
   string filename = "graph";
 

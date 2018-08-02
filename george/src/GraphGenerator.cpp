@@ -13,7 +13,7 @@ void GraphGenerator::newGraph(string &filename,int s){
   int weights[_size][_size];
   for(x=0;x<_size;x++){
     for(y=x+1;y<_size;y++){
-      if(rand()% 3 == 1) weights[x][y] = 2;
+      if(rand()% 8 == 1) weights[x][y] = 2;
       else weights[x][y] = -10;
     }
   }
