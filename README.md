@@ -28,7 +28,7 @@ First, LEMON 1.3 needs to be installed:
 
 You can remove the LEMON sources now, i.e., `rm -rf lemon-1.3`.
 
-Install Symphony:
+Install SYMPHONY:
 
 	https://projects.coin-or.org/SYMPHONY
 
@@ -42,6 +42,10 @@ Next, Yoshiko can be compiled:
     cd build
     cmake .. all
     make
+
+If compiled with SYMPHONY:
+
+    cmake -DSYMPHONY_LIB=~/SYMPHONY-5.6 ..
 
 In case auto-detection of LEMON or CPLEX fails, do
 
